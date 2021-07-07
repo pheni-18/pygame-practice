@@ -24,7 +24,7 @@ player_image = pg.image.load(player_image_path)
 player_x = 300
 player_y = 300
 
-MOVE_DISTANCE = 5
+MOVE_DISTANCE = 1
 
 stop = False
 while not stop:
@@ -34,14 +34,16 @@ while not stop:
         elif event.type == pg.KEYDOWN:
             if event.key == pg.K_ESCAPE:
                 stop = True
-            if event.key == pg.K_UP:
-                player_y -= MOVE_DISTANCE
-            if event.key == pg.K_DOWN:
-                player_y += MOVE_DISTANCE
-            if event.key == pg.K_LEFT:
-                player_x -= MOVE_DISTANCE
-            if event.key == pg.K_RIGHT:
-                player_x += MOVE_DISTANCE
+
+    keystate = pg.key.get_pressed()
+    if keystate[pg.K_UP]:
+        player_y -= MOVE_DISTANCE
+    if keystate[pg.K_DOWN]:
+        player_y += MOVE_DISTANCE
+    if keystate[pg.K_LEFT]:
+        player_x -= MOVE_DISTANCE
+    if keystate[pg.K_RIGHT]:
+        player_x += MOVE_DISTANCE
 
     screen.blit(background_image, (0, 0))
     screen.blit(player_image, (player_x, player_y))

@@ -2,10 +2,18 @@ import pygame as pg
 import os
 
 
+if pg.get_sdl_version()[0] == 2:
+    pg.mixer.pre_init(44100, 32, 2, 1024)
+
 pg.init()
+
+if pg.mixer and not pg.mixer.get_init():
+    print("Warning, no sound")
+    pg.mixer = None
 
 APP_DIR = os.path.split(os.path.abspath(__file__))[0]
 IMAGE_DIR = os.path.join(APP_DIR, 'images')
+SOUND_DIR = os.path.join(APP_DIR, 'sounds')
 
 
 SCREEN_WIDTH = 640
@@ -98,6 +106,16 @@ def reached_goal(player_x: int, player_y: int):
     return False
 
 
+# sound
+goal_sound = None
+if pg.mixer:
+    goal_sound_path = os.path.join(SOUND_DIR, 'goal_sound.mp3')
+    goal_sound = pg.mixer.Sound(goal_sound_path)
+
+    background_music_path = os.path.join(SOUND_DIR, 'background.mp3')
+    pg.mixer.music.load(background_music_path)
+    pg.mixer.music.play(-1)
+
 finish = False
 stop = False
 while not stop:
@@ -128,7 +146,11 @@ while not stop:
     if can_move(tmp_player_rect[0], tmp_player_rect[1]):
         player_x, player_y = tmp_player_rect
 
-    finish = reached_goal(player_x, player_y)
+    if reached_goal(player_x, player_y):
+        finish = True
+        if pg.mixer:
+            pg.mixer.music.stop()
+            goal_sound.play()
 
     screen.blit(background_image, (0, 0))
     screen.blit(goal_image, (goal_x, goal_y))
